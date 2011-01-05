@@ -1,14 +1,20 @@
 from django.contrib import admin
+from django.conf import settings
 
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.admin import GroupAdmin, UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 
-from mptt.admin import MPTTModelAdmin
 from mptt.forms import TreeNodeMultipleChoiceField
 
-class GroupMPTTModelAdmin(GroupAdmin, MPTTModelAdmin):
-    pass
+if getattr(settings, 'MPTT_USE_FEINCMS', False):
+    from mptt.admin import FeinCMSModelAdmin
+    class GroupMPTTModelAdmin(GroupAdmin, FeinCMSModelAdmin):
+        pass
+else:
+    from mptt.admin import MPTTModelAdmin
+    class GroupMPTTModelAdmin(GroupAdmin, MPTTModelAdmin):
+        pass
 
 admin.site.unregister(Group)
 admin.site.register(Group, GroupMPTTModelAdmin)
